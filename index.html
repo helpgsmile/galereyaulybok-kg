@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Галерея улыбок</title>
-    <meta name="description" content="Стоматологическая клиника в Оше. Запишитесь онлайн." />
+    <title>Галерея улыбок — Стоматология в Оше</title>
+    <meta name="description" content="Стоматологическая клиника Галерея улыбок в Оше. Прейскурант, 6 врачей, современное оборудование. Запишитесь онлайн." />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦷</text></svg>" />
-    
-    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- Кнопки переключения темы и языка -->
+    <!-- Управление темой и языком -->
     <div class="controls">
         <button id="themeToggle" aria-label="Переключить тему"><i class="fas fa-moon"></i></button>
         <select id="langSelect">
@@ -29,14 +26,14 @@
         </select>
     </div>
 
-    <!-- ===== HEADER ===== -->
+    <!-- Шапка -->
     <header class="header" role="banner">
         <div class="container header__inner">
             <a href="#" class="logo" aria-label="Галерея улыбок - Главная">
                 <i class="fas fa-tooth"></i>
                 <span data-lang="logo">Галерея <span class="logo__highlight">улыбок</span></span>
             </a>
-            <nav class="nav" role="navigation" aria-label="Основная навигация">
+            <nav class="nav" role="navigation">
                 <ul class="nav__list">
                     <li><a href="#about" data-lang="nav_about">О нас</a></li>
                     <li><a href="#price" data-lang="nav_price">Прайс</a></li>
@@ -52,7 +49,7 @@
         </div>
     </header>
 
-    <!-- ===== HERO ===== -->
+    <!-- Герой-блок -->
     <section class="hero" id="hero">
         <div class="container hero__inner">
             <div class="hero__content" data-aos="fade-right">
@@ -86,7 +83,7 @@
         </div>
     </section>
 
-    <!-- ===== ADVANTAGES ===== -->
+    <!-- Преимущества -->
     <section class="advantages" id="advantages">
         <div class="container">
             <div class="section-label" data-aos="fade-up" data-lang="why_us">Почему мы</div>
@@ -126,7 +123,7 @@
         </div>
     </section>
 
-    <!-- ===== ABOUT ===== -->
+    <!-- О клинике -->
     <section class="about" id="about">
         <div class="container about__inner">
             <div class="about__content" data-aos="fade-right">
@@ -167,12 +164,13 @@
         </div>
     </section>
 
-    <!-- ===== PRICE LIST ===== -->
+    <!-- Полный прейскурант -->
     <section class="price-list" id="price">
         <div class="container">
             <div class="section-label" data-aos="fade-up" data-lang="prices_label">Цены</div>
             <h2 class="section-title" data-aos="fade-up" data-lang="prices_title">Прейскурант <span class="highlight">цен</span></h2>
-            <!-- Категории и пункты – для краткости оставляем как есть, перевод в lang.js -->
+
+            <!-- Категория: Консультация и диагностика -->
             <div class="price-category" data-aos="fade-up">
                 <div class="price-category__header">
                     <span class="price-category__icon"><i class="fas fa-stethoscope"></i></span>
@@ -195,18 +193,191 @@
                     </div>
                 </div>
             </div>
-            <!-- Остальные категории пропускаем для краткости, но в полном коде они есть -->
-            <!-- В реальном проекте нужно добавить все категории из lang.js -->
+
+            <!-- Категория: Гигиена и профилактика -->
+            <div class="price-category" data-aos="fade-up" data-aos-delay="100">
+                <div class="price-category__header">
+                    <span class="price-category__icon"><i class="fas fa-spa"></i></span>
+                    <span class="price-category__title" data-lang="cat_hygiene">Гигиена и профилактика</span>
+                </div>
+                <div class="price-list__grid">
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="0">
+                        <span class="price-item__name" data-lang="price_hygiene_noair">Профессиональная гигиена (без Air Flow)</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">3000 сом</span>
+                            <button class="btn--select" data-service="Профессиональная гигиена (без Air Flow)" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="50">
+                        <span class="price-item__name" data-lang="price_hygiene_air">Профессиональная гигиена (с Air Flow)</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">4000 сом</span>
+                            <button class="btn--select" data-service="Профессиональная гигиена (с Air Flow)" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Категория: Лечение кариеса -->
+            <div class="price-category" data-aos="fade-up" data-aos-delay="200">
+                <div class="price-category__header">
+                    <span class="price-category__icon"><i class="fas fa-tooth"></i></span>
+                    <span class="price-category__title" data-lang="cat_caries">Лечение кариеса и реставрация</span>
+                </div>
+                <div class="price-list__grid">
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="0">
+                        <span class="price-item__name" data-lang="price_caries">Лечение кариеса зуба</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">2000–3500 сом</span>
+                            <button class="btn--select" data-service="Лечение кариеса зуба" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="50">
+                        <span class="price-item__name" data-lang="price_restoration">Художественная реставрация зуба</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">2500–4000 сом</span>
+                            <button class="btn--select" data-service="Художественная реставрация зуба" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Категория: Лечение корневых каналов -->
+            <div class="price-category" data-aos="fade-up" data-aos-delay="300">
+                <div class="price-category__header">
+                    <span class="price-category__icon"><i class="fas fa-bolt"></i></span>
+                    <span class="price-category__title" data-lang="cat_endodontics">Лечение корневых каналов</span>
+                </div>
+                <div class="price-list__grid">
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="0">
+                        <span class="price-item__name" data-lang="price_end_1">Лечение 1 корневого канала</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">1000 сом</span>
+                            <button class="btn--select" data-service="Лечение 1 корневого канала" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="50">
+                        <span class="price-item__name" data-lang="price_end_2">Лечение 2 корневого канала</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">1500 сом</span>
+                            <button class="btn--select" data-service="Лечение 2 корневого канала" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="100">
+                        <span class="price-item__name" data-lang="price_end_3">Лечение 3 корневого канала</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">2000 сом</span>
+                            <button class="btn--select" data-service="Лечение 3 корневого канала" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="150">
+                        <span class="price-item__name" data-lang="price_end_add">Лечение дополнительного канала</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">700 сом</span>
+                            <button class="btn--select" data-service="Лечение дополнительного канала" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="200">
+                        <span class="price-item__name" data-lang="price_end_tool">Извлечение обломка инструмента из канала</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">3000 сом</span>
+                            <button class="btn--select" data-service="Извлечение обломка инструмента из канала" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="250">
+                        <span class="price-item__name" data-lang="price_end_post">Установка стекловолоконного (анкерный, титановый) штифта</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">500 сом</span>
+                            <button class="btn--select" data-service="Установка стекловолоконного штифта" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Категория: Протезирование -->
+            <div class="price-category" data-aos="fade-up" data-aos-delay="400">
+                <div class="price-category__header">
+                    <span class="price-category__icon"><i class="fas fa-crown"></i></span>
+                    <span class="price-category__title" data-lang="cat_prosthetics">Протезирование</span>
+                </div>
+                <div class="price-list__grid">
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="0">
+                        <span class="price-item__name" data-lang="price_prost_temp">Временная коронка (1 шт.)</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">1000 сом</span>
+                            <button class="btn--select" data-service="Временная коронка (1 шт.)" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="50">
+                        <span class="price-item__name" data-lang="price_prost_emax">Керамическая коронка (E-max, 1 шт.)</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">13000 сом</span>
+                            <button class="btn--select" data-service="Керамическая коронка (E-max)" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="100">
+                        <span class="price-item__name" data-lang="price_prost_metal">Металлокерамическая коронка (1 шт.)</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">5000 сом</span>
+                            <button class="btn--select" data-service="Металлокерамическая коронка" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="150">
+                        <span class="price-item__name" data-lang="price_prost_metal_implant">Металлокерамическая коронка на имплантате (1 шт.)</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">9000 сом</span>
+                            <button class="btn--select" data-service="Металлокерамическая коронка на имплантате" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="200">
+                        <span class="price-item__name" data-lang="price_prost_zircon">Цирконовая коронка (1 шт.)</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">11000 сом</span>
+                            <button class="btn--select" data-service="Цирконовая коронка" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="250">
+                        <span class="price-item__name" data-lang="price_prost_denture">Полный съемный протез (1 челюсть)</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">15000 сом</span>
+                            <button class="btn--select" data-service="Полный съемный протез" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="300">
+                        <span class="price-item__name" data-lang="price_prost_zircon_implant">Цирконовая коронка на имплантате (1 шт.)</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">14000 сом</span>
+                            <button class="btn--select" data-service="Цирконовая коронка на имплантате" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Категория: Хирургия -->
+            <div class="price-category" data-aos="fade-up" data-aos-delay="500">
+                <div class="price-category__header">
+                    <span class="price-category__icon"><i class="fas fa-scalpel"></i></span>
+                    <span class="price-category__title" data-lang="cat_surgery">Хирургия</span>
+                </div>
+                <div class="price-list__grid">
+                    <div class="price-item" data-aos="fade-up" data-aos-delay="0">
+                        <span class="price-item__name" data-lang="price_surgery_extract">Удаление зуба</span>
+                        <div class="price-item__actions">
+                            <span class="price-item__value">1000–5000 сом</span>
+                            <button class="btn--select" data-service="Удаление зуба" data-lang="select">Выбрать</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- ===== DOCTORS ===== -->
+    <!-- Врачи -->
     <section class="doctors" id="doctors">
         <div class="container">
             <span class="section-label" data-aos="fade-up" data-lang="doctors_label">Врачи</span>
             <h2 class="section-title" data-aos="fade-up" data-lang="doctors_title">Опытные <span class="highlight">специалисты</span></h2>
             <div class="doctors__grid">
-                <!-- Карточки врачей (6 шт.) – данные статические, имена можно перевести отдельно -->
                 <div class="doctor-card" data-aos="flip-left" data-aos-delay="0">
                     <div class="doctor-card__img"><img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Доктор Азиз Абдиев" loading="lazy" /></div>
                     <h3>Азиз Абдиев</h3>
@@ -215,12 +386,51 @@
                     <div class="doctor-card__rating"><i class="fas fa-star" style="color:#eab308;"></i> 4.9</div>
                     <a href="#booking" class="btn btn--small btn--primary" data-lang="btn_book">Записаться</a>
                 </div>
-                <!-- Остальные врачи аналогично -->
+                <div class="doctor-card" data-aos="flip-left" data-aos-delay="100">
+                    <div class="doctor-card__img"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Доктор Айнура Абдылдаева" loading="lazy" /></div>
+                    <h3>Айнура Абдылдаева</h3>
+                    <p class="doctor-card__spec" data-lang="doc2_spec">Врач-терапевт, эндодонтист</p>
+                    <p class="doctor-card__exp" data-lang="doc2_exp">12 лет опыта</p>
+                    <div class="doctor-card__rating"><i class="fas fa-star" style="color:#eab308;"></i> 4.8</div>
+                    <a href="#booking" class="btn btn--small btn--primary" data-lang="btn_book">Записаться</a>
+                </div>
+                <div class="doctor-card" data-aos="flip-left" data-aos-delay="200">
+                    <div class="doctor-card__img"><img src="https://randomuser.me/api/portraits/men/52.jpg" alt="Доктор Бекболот Маматов" loading="lazy" /></div>
+                    <h3>Бекболот Маматов</h3>
+                    <p class="doctor-card__spec" data-lang="doc3_spec">Ортодонт (брекеты, элайнеры)</p>
+                    <p class="doctor-card__exp" data-lang="doc3_exp">10 лет опыта</p>
+                    <div class="doctor-card__rating"><i class="fas fa-star" style="color:#eab308;"></i> 4.7</div>
+                    <a href="#booking" class="btn btn--small btn--primary" data-lang="btn_book">Записаться</a>
+                </div>
+                <div class="doctor-card" data-aos="flip-left" data-aos-delay="300">
+                    <div class="doctor-card__img"><img src="https://randomuser.me/api/portraits/women/63.jpg" alt="Доктор Гульмира Кыдырова" loading="lazy" /></div>
+                    <h3>Гульмира Кыдырова</h3>
+                    <p class="doctor-card__spec" data-lang="doc4_spec">Детский стоматолог</p>
+                    <p class="doctor-card__exp" data-lang="doc4_exp">8 лет опыта</p>
+                    <div class="doctor-card__rating"><i class="fas fa-star" style="color:#eab308;"></i> 4.9</div>
+                    <a href="#booking" class="btn btn--small btn--primary" data-lang="btn_book">Записаться</a>
+                </div>
+                <div class="doctor-card" data-aos="flip-left" data-aos-delay="400">
+                    <div class="doctor-card__img"><img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Доктор Жениш Осмонов" loading="lazy" /></div>
+                    <h3>Жениш Осмонов</h3>
+                    <p class="doctor-card__spec" data-lang="doc5_spec">Ортопед, протезист</p>
+                    <p class="doctor-card__exp" data-lang="doc5_exp">14 лет опыта</p>
+                    <div class="doctor-card__rating"><i class="fas fa-star" style="color:#eab308;"></i> 4.8</div>
+                    <a href="#booking" class="btn btn--small btn--primary" data-lang="btn_book">Записаться</a>
+                </div>
+                <div class="doctor-card" data-aos="flip-left" data-aos-delay="500">
+                    <div class="doctor-card__img"><img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Доктор Чолпон Садыкова" loading="lazy" /></div>
+                    <h3>Чолпон Садыкова</h3>
+                    <p class="doctor-card__spec" data-lang="doc6_spec">Пародонтолог, гигиенист</p>
+                    <p class="doctor-card__exp" data-lang="doc6_exp">9 лет опыта</p>
+                    <div class="doctor-card__rating"><i class="fas fa-star" style="color:#eab308;"></i> 4.7</div>
+                    <a href="#booking" class="btn btn--small btn--primary" data-lang="btn_book">Записаться</a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== VIDEO CAROUSEL ===== -->
+    <!-- Видеоотзывы -->
     <section class="video-carousel" id="video-carousel">
         <div class="container">
             <span class="section-label" data-aos="fade-up" data-lang="video_label">Видеоотзывы</span>
@@ -228,7 +438,10 @@
             <div class="swiper videoSwiper" data-aos="fade-up">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" allowfullscreen loading="lazy"></iframe></div>
-                    <!-- ещё 4 слайда -->
+                    <div class="swiper-slide"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" allowfullscreen loading="lazy"></iframe></div>
+                    <div class="swiper-slide"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" allowfullscreen loading="lazy"></iframe></div>
+                    <div class="swiper-slide"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" allowfullscreen loading="lazy"></iframe></div>
+                    <div class="swiper-slide"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" allowfullscreen loading="lazy"></iframe></div>
                 </div>
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
@@ -237,7 +450,7 @@
         </div>
     </section>
 
-    <!-- ===== BOOKING ===== -->
+    <!-- Форма записи -->
     <section class="booking" id="booking">
         <div class="container booking__inner">
             <div class="booking__content" data-aos="fade-right">
@@ -286,7 +499,26 @@
                             <label for="service" data-lang="label_service">Услуга <span class="required">*</span></label>
                             <select id="service" name="service" required>
                                 <option value="" data-lang="select_service">Выберите услугу</option>
-                                <!-- все услуги из прейскуранта -->
+                                <option value="Консультация с составлением плана лечения">Консультация с составлением плана лечения</option>
+                                <option value="Рентген 1 зуба">Рентген 1 зуба</option>
+                                <option value="Профессиональная гигиена (без Air Flow)">Профессиональная гигиена (без Air Flow)</option>
+                                <option value="Профессиональная гигиена (с Air Flow)">Профессиональная гигиена (с Air Flow)</option>
+                                <option value="Лечение кариеса зуба">Лечение кариеса зуба</option>
+                                <option value="Художественная реставрация зуба">Художественная реставрация зуба</option>
+                                <option value="Лечение 1 корневого канала">Лечение 1 корневого канала</option>
+                                <option value="Лечение 2 корневого канала">Лечение 2 корневого канала</option>
+                                <option value="Лечение 3 корневого канала">Лечение 3 корневого канала</option>
+                                <option value="Лечение дополнительного канала">Лечение дополнительного канала</option>
+                                <option value="Извлечение обломка инструмента из канала">Извлечение обломка инструмента из канала</option>
+                                <option value="Установка стекловолоконного штифта">Установка стекловолоконного штифта</option>
+                                <option value="Временная коронка (1 шт.)">Временная коронка (1 шт.)</option>
+                                <option value="Керамическая коронка (E-max)">Керамическая коронка (E-max)</option>
+                                <option value="Металлокерамическая коронка">Металлокерамическая коронка</option>
+                                <option value="Металлокерамическая коронка на имплантате">Металлокерамическая коронка на имплантате</option>
+                                <option value="Цирконовая коронка">Цирконовая коронка</option>
+                                <option value="Полный съемный протез">Полный съемный протез</option>
+                                <option value="Цирконовая коронка на имплантате">Цирконовая коронка на имплантате</option>
+                                <option value="Удаление зуба">Удаление зуба</option>
                             </select>
                         </div>
                     </div>
@@ -313,7 +545,7 @@
         </div>
     </section>
 
-    <!-- ===== CONTACTS ===== -->
+    <!-- Контакты -->
     <section class="contacts" id="contacts">
         <div class="container contacts__inner">
             <div class="contacts__info" data-aos="fade-right">
@@ -339,7 +571,7 @@
         </div>
     </section>
 
-    <!-- ===== FOOTER ===== -->
+    <!-- Футер -->
     <footer class="footer" role="contentinfo">
         <div class="container footer__inner">
             <div class="footer__brand">
@@ -377,7 +609,6 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="lang.js"></script>
