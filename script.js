@@ -95,7 +95,7 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     const msgDiv = document.getElementById('formMessage');
 
     // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMLlJsLM7eVyou4VyNQ_DsAQSGKjkILv_maMSw5Xul70fs8wC_ZukSertKJIika2I2LQ/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoPq95oZiVkF1T107fkybnvFw4jCvIBxmRHeMaUsny6Kmsl7bzA-mUhN7TF4mKsbsojg/exec';
 
     async function checkAvailability(date, time, doctor) {
         try {
