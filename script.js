@@ -86,7 +86,7 @@
             const msgDiv = document.getElementById('formMessage');
 
             // ⚠️ ЗАМЕНИТЕ ЭТУ ССЫЛКУ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
-            const SCRIPT_URL = 'https://script.google.com/macros/s/ВАШ_ID/exec';
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKBsNeWrr_p1FsMMWWoXdtO0ihqM2I49UfZE-1ivBFNRSsGn6t1y97d-H2F5kLvTeU7Q/exec';
 
             // Генерация временных слотов (09:00 – 17:00)
             function generateTimeSlots() {
