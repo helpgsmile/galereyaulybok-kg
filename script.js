@@ -86,7 +86,7 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     const msgDiv = document.getElementById('formMessage');
 
     // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ GOOGLE SCRIPT
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3zbAnqv-iHzntAKWwVEabMty0XZ4qZGq3AMMFl-sgII64VzkN4kmftBLvjkgySF79Dw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4LWn30Tjh8nEDMA6cUbBkGP1hPnxL6mhSX6pMzNh2_8USxGNZTg4-hrphVKG4GGg1Pw/exec';
 
     const iframe = document.createElement('iframe');
     iframe.name = 'hiddenFrame';
