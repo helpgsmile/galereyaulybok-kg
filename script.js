@@ -76,7 +76,7 @@ document.querySelectorAll('.btn--select').forEach(btn => {
 });
 
 // ============================================================
-//  ОТПРАВКА ФОРМЫ НА GOOGLE APPS SCRIPT
+//  ОТПРАВКА ФОРМЫ НА GOOGLE APPS SCRIPT ЧЕРЕЗ IFRAME (без CORS)
 // ============================================================
 (function() {
     const form = document.getElementById('bookingForm');
@@ -85,7 +85,7 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     const msgDiv = document.getElementById('formMessage');
 
     // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxt485neLpO5I17v4zdaeqZpt6_kSiF9VfU_MzwUKgZN2jIuNB30vvCJXpb2BlEoMwXHg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyj-cWHM6cszYmtwFCgTBslz_QYMWpuVPGKDxURNQtxwRhpTAyfGurM6BPTJj0ce6lMwg/exec';
 
     function generateTimeSlots() {
         const slots = [];
@@ -138,9 +138,48 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     const todayStr = new Date().toISOString().split('T')[0];
     dateInput.setAttribute('min', todayStr);
 
-    form.addEventListener('submit', async function(e) {
+    // Создаём скрытый iframe для отправки
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hiddenFrame';
+    iframe.id = 'hiddenFrame';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // Обработчик события загрузки iframe (ответ от сервера)
+    iframe.addEventListener('load', function() {
+        try {
+            // Пытаемся прочитать ответ
+            const responseText = iframe.contentDocument.body.innerText;
+            const result = JSON.parse(responseText);
+            if (result.success) {
+                msgDiv.className = 'form-message success';
+                msgDiv.textContent = result.message || 'Запись успешно создана! Мы свяжемся с вами.';
+                // Очистка полей
+                document.getElementById('lastName').value = '';
+                document.getElementById('firstName').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('service').value = '';
+                document.getElementById('comment').value = '';
+                if (dateInput.value && document.getElementById('doctor').value) {
+                    populateTimeSlots(dateInput.value, document.getElementById('doctor').value);
+                }
+            } else {
+                msgDiv.className = 'form-message error';
+                msgDiv.textContent = result.error || 'Произошла ошибка при записи. Попробуйте ещё раз.';
+            }
+        } catch (error) {
+            console.error('Ошибка парсинга ответа:', error);
+            msgDiv.className = 'form-message error';
+            msgDiv.textContent = 'Ошибка получения ответа от сервера. Попробуйте позже.';
+        }
+        // Очищаем iframe, чтобы избежать повторного срабатывания
+        iframe.src = 'about:blank';
+    });
+
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
 
+        // Валидация
         const lastName = document.getElementById('lastName').value.trim();
         const firstName = document.getElementById('firstName').value.trim();
         const phone = document.getElementById('phone').value.trim();
@@ -161,41 +200,42 @@ document.querySelectorAll('.btn--select').forEach(btn => {
             fullPhone = '+996' + phone.replace(/^\+?/, '');
         }
 
-        const payload = { lastName, firstName, phone: fullPhone, doctor, service, date, time, comment };
+        // Создаём временную форму для отправки через iframe
+        const hiddenForm = document.createElement('form');
+        hiddenForm.method = 'POST';
+        hiddenForm.action = SCRIPT_URL;
+        hiddenForm.target = 'hiddenFrame';
+        hiddenForm.style.display = 'none';
 
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-
-            if (result.success) {
-                msgDiv.className = 'form-message success';
-                msgDiv.textContent = result.message || 'Запись успешно создана! Мы свяжемся с вами.';
-                document.getElementById('lastName').value = '';
-                document.getElementById('firstName').value = '';
-                document.getElementById('phone').value = '';
-                document.getElementById('service').value = '';
-                document.getElementById('comment').value = '';
-                if (date && doctor) populateTimeSlots(date, doctor);
-            } else {
-                msgDiv.className = 'form-message error';
-                msgDiv.textContent = result.error || 'Произошла ошибка при записи. Попробуйте ещё раз.';
-            }
-        } catch (error) {
-            console.error('Ошибка отправки:', error);
-            msgDiv.className = 'form-message error';
-            msgDiv.textContent = 'Ошибка соединения с сервером. Проверьте интернет или попробуйте позже.';
+        // Добавляем поля
+        const fields = {
+            lastName: lastName,
+            firstName: firstName,
+            phone: fullPhone,
+            doctor: doctor,
+            service: service,
+            date: date,
+            time: time,
+            comment: comment
+        };
+        for (let key in fields) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = fields[key];
+            hiddenForm.appendChild(input);
         }
+
+        document.body.appendChild(hiddenForm);
+        hiddenForm.submit();
+        // Форма отправится, после ответа сработает обработчик iframe
+        // Удаляем форму после отправки (не сразу, а после ответа)
+        // Можно удалить через setTimeout, но мы удалим в обработчике iframe
+        // Для этого сохраним ссылку на форму
+        hiddenForm.dataset.submitted = 'true';
+        // Очистим форму после отправки (через небольшую задержку)
+        setTimeout(() => {
+            if (hiddenForm.parentNode) hiddenForm.remove();
+        }, 5000);
     });
 })();
