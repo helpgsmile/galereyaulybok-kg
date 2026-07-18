@@ -54,18 +54,9 @@ statNumbers.forEach(el => observer.observe(el));
 new Swiper('.videoSwiper', {
     slidesPerView: 1,
     spaceBetween: 20,
-    navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-    },
-    pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-    },
-    breakpoints: {
-        640: { slidesPerView: 2 },
-        1024: { slidesPerView: 3 },
-    },
+    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+    pagination: { el: '.swiper-pagination', clickable: true },
+    breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } },
     loop: true,
     autoplay: { delay: 5000, disableOnInteraction: true },
 });
@@ -94,25 +85,21 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     const dateInput = document.getElementById('date');
     const msgDiv = document.getElementById('formMessage');
 
-    // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
+    // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ GOOGLE SCRIPT
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3zbAnqv-iHzntAKWwVEabMty0XZ4qZGq3AMMFl-sgII64VzkN4kmftBLvjkgySF79Dw/exec';
 
-    // Создаём скрытый iframe
     const iframe = document.createElement('iframe');
     iframe.name = 'hiddenFrame';
     iframe.id = 'hiddenFrame';
     iframe.style.display = 'none';
     document.body.appendChild(iframe);
 
-    // Обработчик сообщений от iframe (postMessage)
     window.addEventListener('message', function(event) {
-        // Проверяем, что сообщение от нашего iframe (по желанию можно проверить origin)
         const data = event.data;
         if (data && typeof data === 'object') {
-            if (data.success) {
+            if (data.type === 'BOOKING_SUCCESS') {
                 msgDiv.className = 'form-message success';
-                msgDiv.textContent = data.message || translations[currentLang]?.msg_success || 'Запись успешно создана! Мы свяжемся с вами.';
-                // Очистка полей
+                msgDiv.textContent = data.message || 'Запись успешно создана! Мы свяжемся с вами.';
                 document.getElementById('lastName').value = '';
                 document.getElementById('firstName').value = '';
                 document.getElementById('phone').value = '';
@@ -121,24 +108,21 @@ document.querySelectorAll('.btn--select').forEach(btn => {
                 if (dateInput.value && document.getElementById('doctor').value) {
                     populateTimeSlots(dateInput.value, document.getElementById('doctor').value);
                 }
-            } else {
+            } else if (data.type === 'BOOKING_ERROR') {
                 msgDiv.className = 'form-message error';
-                msgDiv.textContent = data.error || translations[currentLang]?.msg_error || 'Ошибка при создании записи.';
+                msgDiv.textContent = data.error || 'Ошибка при создании записи.';
             }
         }
     });
 
-    // Функция проверки занятости через GET (с CORS, но если ошибка – пропускаем)
     async function checkAvailability(date, time, doctor) {
         try {
-            const url = SCRIPT_URL + '?date=' + encodeURIComponent(date) +
-                        '&time=' + encodeURIComponent(time) +
-                        '&doctor=' + encodeURIComponent(doctor);
+            const url = SCRIPT_URL + '?date=' + encodeURIComponent(date) + '&doctor=' + encodeURIComponent(doctor);
             const response = await fetch(url, { method: 'GET' });
             if (!response.ok) return false;
             const result = await response.json();
             if (!result.success) return false;
-            return result.bookings.some(b => b.date === date && b.time === time && b.doctor === doctor);
+            return result.bookedTimes.includes(time);
         } catch (error) {
             console.warn('Ошибка проверки занятости (CORS), пропускаем проверку:', error);
             return false;
@@ -157,7 +141,9 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const selected = new Date(selectedDate + 'T00:00:00');
 
-        timeSelect.innerHTML = '<option value="">' + (translations[currentLang]?.select_time || 'Выберите время') + '</option>';
+        const activeLang = typeof currentLang !== 'undefined' ? currentLang : 'ru';
+        timeSelect.innerHTML = '<option value="">' + (typeof translations !== 'undefined' && translations[activeLang]?.select_time ? translations[activeLang].select_time : 'Выберите время') + '</option>';
+        
         slots.forEach(time => {
             if (selected.getTime() === today.getTime()) {
                 const [h] = time.split(':').map(Number);
@@ -173,13 +159,11 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     dateInput.addEventListener('change', function() {
         const doctor = document.getElementById('doctor').value;
         if (this.value && doctor) populateTimeSlots(this.value, doctor);
-        else timeSelect.innerHTML = '<option value="">' + (translations[currentLang]?.select_time || 'Выберите время') + '</option>';
     });
 
     document.getElementById('doctor').addEventListener('change', function() {
         const date = dateInput.value;
         if (date && this.value) populateTimeSlots(date, this.value);
-        else timeSelect.innerHTML = '<option value="">' + (translations[currentLang]?.select_time || 'Выберите время') + '</option>';
     });
 
     const todayStr = new Date().toISOString().split('T')[0];
@@ -191,48 +175,51 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         const lastName = document.getElementById('lastName').value.trim();
         const firstName = document.getElementById('firstName').value.trim();
         const phone = document.getElementById('phone').value.trim();
-        const doctor = document.getElementById('doctor').value;
-        const service = document.getElementById('service').value;
+        const doctorSelect = document.getElementById('doctor');
+        const serviceSelect = document.getElementById('service');
         const date = dateInput.value;
         const time = timeSelect.value;
         const comment = document.getElementById('comment').value.trim();
+        
+        const activeLang = typeof currentLang !== 'undefined' ? currentLang : (document.documentElement.lang || 'ru');
 
-        if (!lastName || !firstName || !phone || !doctor || !service || !date || !time) {
+        if (!lastName || !firstName || !phone || !doctorSelect.value || !serviceSelect.value || !date || !time) {
             msgDiv.className = 'form-message error';
-            msgDiv.textContent = translations[currentLang]?.msg_fill_fields || 'Пожалуйста, заполните все обязательные поля.';
+            msgDiv.textContent = typeof translations !== 'undefined' && translations[activeLang]?.msg_fill_fields ? translations[activeLang].msg_fill_fields : 'Пожалуйста, заполните все обязательные поля.';
             return;
         }
 
-        // Проверка занятости (если CORS не работает – пропускаем)
-        const isTaken = await checkAvailability(date, time, doctor);
+        const isTaken = await checkAvailability(date, time, doctorSelect.value);
         if (isTaken) {
             msgDiv.className = 'form-message error';
-            msgDiv.textContent = translations[currentLang]?.msg_time_taken || 'Это время уже занято. Пожалуйста, выберите другое время.';
+            msgDiv.textContent = typeof translations !== 'undefined' && translations[activeLang]?.msg_time_taken ? translations[activeLang].msg_time_taken : 'Это время уже занято. Пожалуйста, выберите другое время.';
             return;
         }
 
         let fullPhone = phone;
         if (!phone.startsWith('+996')) fullPhone = '+996' + phone.replace(/^\+?/, '');
 
-        // Создаём временную форму для отправки через iframe
         const hiddenForm = document.createElement('form');
         hiddenForm.method = 'POST';
         hiddenForm.action = SCRIPT_URL;
         hiddenForm.target = 'hiddenFrame';
         hiddenForm.style.display = 'none';
 
-        // Добавляем все поля
         const fields = {
             lastName: lastName,
             firstName: firstName,
             phone: fullPhone,
-            doctor: doctor,
-            service: service,
+            doctor: doctorSelect.value,
+            doctorText: doctorSelect.options[doctorSelect.selectedIndex].text,
+            service: serviceSelect.value,
+            serviceText: serviceSelect.options[serviceSelect.selectedIndex].text,
             date: date,
             time: time,
             comment: comment,
-            _iframe: 'true' // маркер для скрипта, что запрос из iframe
+            lang: activeLang,
+            _iframe: 'true'
         };
+        
         for (let key in fields) {
             const input = document.createElement('input');
             input.type = 'hidden';
@@ -243,7 +230,7 @@ document.querySelectorAll('.btn--select').forEach(btn => {
 
         document.body.appendChild(hiddenForm);
         hiddenForm.submit();
-        // Удаляем форму после отправки
+        
         setTimeout(() => {
             if (hiddenForm.parentNode) hiddenForm.remove();
         }, 5000);
