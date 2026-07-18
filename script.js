@@ -85,7 +85,7 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     const msgDiv = document.getElementById('formMessage');
 
     // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZmKwF-KksEq1FMSt4DxWh1NS4GodZtT26pzb4djbTPyNDmff7MFFQWJfwrxTJgO_rcQ/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxt485neLpO5I17v4zdaeqZpt6_kSiF9VfU_MzwUKgZN2jIuNB30vvCJXpb2BlEoMwXHg/exec';
 
     function generateTimeSlots() {
         const slots = [];
@@ -173,7 +173,6 @@ document.querySelectorAll('.btn--select').forEach(btn => {
                 body: JSON.stringify(payload),
             });
 
-            // Проверяем статус ответа
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
