@@ -101,7 +101,7 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     const msgDiv = document.getElementById('formMessage');
 
     // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
-    const SCRIPT_URL = 'https://script.google.com/macros/s/ВАШ_ID/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKrcJk8ZiHzgDfI1ePTf0V1H6H3ChxZk-Yu3UoNRMPGTTCFMVkNPTP5HCqI48u9gLU_w/exec';
 
     // Проверка занятости через GET
     async function checkAvailability(date, time, doctor) {
