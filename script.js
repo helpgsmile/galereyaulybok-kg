@@ -1,220 +1,200 @@
+// Инициализация AOS
+AOS.init({ duration: 800, once: true, offset: 20 });
 
-        // Инициализация AOS
-        AOS.init({ duration: 800, once: true, offset: 20 });
+// Бургер-меню
+document.querySelector('.burger').addEventListener('click', function() {
+    const nav = document.querySelector('.nav');
+    nav.classList.toggle('active');
+    this.setAttribute('aria-expanded', nav.classList.contains('active'));
+});
+document.querySelectorAll('.nav__list a').forEach(link => {
+    link.addEventListener('click', () => {
+        document.querySelector('.nav').classList.remove('active');
+        document.querySelector('.burger').setAttribute('aria-expanded', 'false');
+    });
+});
 
-        // Бургер-меню
-        document.querySelector('.burger').addEventListener('click', function() {
-            const nav = document.querySelector('.nav');
-            nav.classList.toggle('active');
-            this.setAttribute('aria-expanded', nav.classList.contains('active'));
-        });
-        document.querySelectorAll('.nav__list a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav').classList.remove('active');
-                document.querySelector('.burger').setAttribute('aria-expanded', 'false');
-            });
-        });
-
-        // Анимированная статистика
-        const statNumbers = document.querySelectorAll('.stat__number[data-count]');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const el = entry.target;
-                    const target = parseInt(el.getAttribute('data-count'), 10);
-                    let current = 0;
-                    const step = Math.ceil(target / 60);
-                    const timer = setInterval(() => {
-                        current += step;
-                        if (current >= target) {
-                            el.textContent = target;
-                            clearInterval(timer);
-                        } else {
-                            el.textContent = current;
-                        }
-                    }, 20);
-                    observer.unobserve(el);
-                }
-            });
-        }, { threshold: 0.5 });
-        statNumbers.forEach(el => observer.observe(el));
-
-        // Карусель видео
-        const videoSwiper = new Swiper('.videoSwiper', {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            breakpoints: {
-                640: { slidesPerView: 2 },
-                1024: { slidesPerView: 3 },
-            },
-            loop: true,
-            autoplay: { delay: 5000, disableOnInteraction: true },
-        });
-
-        // Кнопки "Выбрать" в прайс-листе
-        document.querySelectorAll('.btn--select').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const serviceName = this.getAttribute('data-service');
-                document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-                setTimeout(() => {
-                    const serviceSelect = document.getElementById('service');
-                    for (let opt of serviceSelect.options) {
-                        if (opt.text === serviceName || opt.value === serviceName) {
-                            serviceSelect.value = opt.value;
-                            break;
-                        }
-                    }
-                }, 300);
-            });
-        });
-
-        // ============================================================
-        //  ОТПРАВКА ФОРМЫ НА GOOGLE APPS SCRIPT
-        // ============================================================
-        (function() {
-            const form = document.getElementById('bookingForm');
-            const timeSelect = document.getElementById('time');
-            const dateInput = document.getElementById('date');
-            const msgDiv = document.getElementById('formMessage');
-
-            // ⚠️ ЗАМЕНИТЕ ЭТУ ССЫЛКУ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKBsNeWrr_p1FsMMWWoXdtO0ihqM2I49UfZE-1ivBFNRSsGn6t1y97d-H2F5kLvTeU7Q/exec';
-
-            // Генерация временных слотов (09:00 – 17:00)
-            function generateTimeSlots() {
-                const slots = [];
-                for (let h = 9; h <= 17; h++) {
-                    slots.push(String(h).padStart(2, '0') + ':00');
-                }
-                return slots;
-            }
-
-            // Заполнение select времени (без проверки занятости на клиенте, только фильтр по времени)
-            function populateTimeSlots(selectedDate, selectedDoctor) {
-                const slots = generateTimeSlots();
-                const now = new Date();
-                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                const selected = new Date(selectedDate + 'T00:00:00');
-
-                timeSelect.innerHTML = '<option value="">Выберите время</option>';
-
-                slots.forEach(time => {
-                    // Не показываем прошедшее время на сегодня
-                    if (selected.getTime() === today.getTime()) {
-                        const [h] = time.split(':').map(Number);
-                        if (h < now.getHours() || (h === now.getHours() && now.getMinutes() > 0)) {
-                            return;
-                        }
-                    }
-                    const option = document.createElement('option');
-                    option.value = time;
-                    option.textContent = time;
-                    timeSelect.appendChild(option);
-                });
-            }
-
-            // Обработчики изменения даты и врача
-            dateInput.addEventListener('change', function() {
-                const doctor = document.getElementById('doctor').value;
-                if (this.value && doctor) {
-                    populateTimeSlots(this.value, doctor);
+// Анимированная статистика
+const statNumbers = document.querySelectorAll('.stat__number[data-count]');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            const target = parseInt(el.getAttribute('data-count'), 10);
+            let current = 0;
+            const step = Math.ceil(target / 60);
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    el.textContent = target;
+                    clearInterval(timer);
                 } else {
-                    timeSelect.innerHTML = '<option value="">Выберите дату и врача</option>';
+                    el.textContent = current;
                 }
-            });
+            }, 20);
+            observer.unobserve(el);
+        }
+    });
+}, { threshold: 0.5 });
+statNumbers.forEach(el => observer.observe(el));
 
-            document.getElementById('doctor').addEventListener('change', function() {
-                const date = dateInput.value;
-                if (date && this.value) {
-                    populateTimeSlots(date, this.value);
-                } else {
-                    timeSelect.innerHTML = '<option value="">Выберите дату и врача</option>';
+// Карусель видео
+const videoSwiper = new Swiper('.videoSwiper', {
+    slidesPerView: 1,
+    spaceBetween: 20,
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+    breakpoints: {
+        640: { slidesPerView: 2 },
+        1024: { slidesPerView: 3 },
+    },
+    loop: true,
+    autoplay: { delay: 5000, disableOnInteraction: true },
+});
+
+// Кнопки "Выбрать" в прайс-листе
+document.querySelectorAll('.btn--select').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const serviceName = this.getAttribute('data-service');
+        document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+            const serviceSelect = document.getElementById('service');
+            for (let opt of serviceSelect.options) {
+                if (opt.text === serviceName || opt.value === serviceName) {
+                    serviceSelect.value = opt.value;
+                    break;
                 }
-            });
+            }
+        }, 300);
+    });
+});
 
-            // Минимальная дата – сегодня
-            const todayStr = new Date().toISOString().split('T')[0];
-            dateInput.setAttribute('min', todayStr);
+// ============================================================
+//  ОТПРАВКА ФОРМЫ НА GOOGLE APPS SCRIPT
+// ============================================================
+(function() {
+    const form = document.getElementById('bookingForm');
+    const timeSelect = document.getElementById('time');
+    const dateInput = document.getElementById('date');
+    const msgDiv = document.getElementById('formMessage');
 
-            // Обработка отправки формы
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
+    // ⚠️ ЗАМЕНИТЕ ЭТУ ССЫЛКУ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPOlbk5uVVvz_A0KrrGNaj3fiG1iWvvku5mum4CPWSsw_OVRoc2eJd9_KbVuYuMwdA9w/exec';
 
-                // Собираем данные
-                const lastName = document.getElementById('lastName').value.trim();
-                const firstName = document.getElementById('firstName').value.trim();
-                const phone = document.getElementById('phone').value.trim();
-                const doctor = document.getElementById('doctor').value;
-                const service = document.getElementById('service').value;
-                const date = dateInput.value;
-                const time = timeSelect.value;
-                const comment = document.getElementById('comment').value.trim();
+    // Генерация временных слотов (09:00 – 17:00)
+    function generateTimeSlots() {
+        const slots = [];
+        for (let h = 9; h <= 17; h++) {
+            slots.push(String(h).padStart(2, '0') + ':00');
+        }
+        return slots;
+    }
 
-                // Валидация
-                if (!lastName || !firstName || !phone || !doctor || !service || !date || !time) {
-                    msgDiv.className = 'form-message error';
-                    msgDiv.textContent = 'Пожалуйста, заполните все обязательные поля.';
+    // Заполнение select времени
+    function populateTimeSlots(selectedDate, selectedDoctor) {
+        const slots = generateTimeSlots();
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const selected = new Date(selectedDate + 'T00:00:00');
+
+        timeSelect.innerHTML = '<option value="">Выберите время</option>';
+
+        slots.forEach(time => {
+            if (selected.getTime() === today.getTime()) {
+                const [h] = time.split(':').map(Number);
+                if (h < now.getHours() || (h === now.getHours() && now.getMinutes() > 0)) {
                     return;
                 }
+            }
+            const option = document.createElement('option');
+            option.value = time;
+            option.textContent = time;
+            timeSelect.appendChild(option);
+        });
+    }
 
-                // Автоматически добавляем +996
-                let fullPhone = phone;
-                if (!phone.startsWith('+996')) {
-                    fullPhone = '+996' + phone.replace(/^\+?/, '');
-                }
+    // Обработчики изменения даты и врача
+    dateInput.addEventListener('change', function() {
+        const doctor = document.getElementById('doctor').value;
+        if (this.value && doctor) {
+            populateTimeSlots(this.value, doctor);
+        } else {
+            timeSelect.innerHTML = '<option value="">Выберите дату и врача</option>';
+        }
+    });
 
-                // Подготовка данных для отправки
-                const payload = {
-                    lastName,
-                    firstName,
-                    phone: fullPhone,
-                    doctor,
-                    service,
-                    date,
-                    time,
-                    comment
-                };
+    document.getElementById('doctor').addEventListener('change', function() {
+        const date = dateInput.value;
+        if (date && this.value) {
+            populateTimeSlots(date, this.value);
+        } else {
+            timeSelect.innerHTML = '<option value="">Выберите дату и врача</option>';
+        }
+    });
 
-                try {
-                    // Отправка POST-запроса на Apps Script
-                    const response = await fetch(SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'cors', // важно для получения ответа
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(payload),
-                    });
+    // Минимальная дата – сегодня
+    const todayStr = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', todayStr);
 
-                    const result = await response.json();
+    // Обработка отправки формы
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
 
-                    if (result.success) {
-                        msgDiv.className = 'form-message success';
-                        msgDiv.textContent = result.message || 'Запись успешно создана! Мы свяжемся с вами.';
-                        // Очищаем форму (кроме даты и врача, чтобы сохранить контекст)
-                        document.getElementById('lastName').value = '';
-                        document.getElementById('firstName').value = '';
-                        document.getElementById('phone').value = '';
-                        document.getElementById('service').value = '';
-                        document.getElementById('comment').value = '';
-                        // Обновляем список времени (чтобы слоты остались актуальными)
-                        if (date && doctor) populateTimeSlots(date, doctor);
-                    } else {
-                        msgDiv.className = 'form-message error';
-                        msgDiv.textContent = result.error || 'Произошла ошибка при записи. Попробуйте ещё раз.';
-                    }
-                } catch (error) {
-                    console.error('Ошибка отправки:', error);
-                    msgDiv.className = 'form-message error';
-                    msgDiv.textContent = 'Ошибка соединения с сервером. Проверьте интернет или попробуйте позже.';
-                }
+        const lastName = document.getElementById('lastName').value.trim();
+        const firstName = document.getElementById('firstName').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const doctor = document.getElementById('doctor').value;
+        const service = document.getElementById('service').value;
+        const date = dateInput.value;
+        const time = timeSelect.value;
+        const comment = document.getElementById('comment').value.trim();
+
+        if (!lastName || !firstName || !phone || !doctor || !service || !date || !time) {
+            msgDiv.className = 'form-message error';
+            msgDiv.textContent = 'Пожалуйста, заполните все обязательные поля.';
+            return;
+        }
+
+        let fullPhone = phone;
+        if (!phone.startsWith('+996')) {
+            fullPhone = '+996' + phone.replace(/^\+?/, '');
+        }
+
+        const payload = { lastName, firstName, phone: fullPhone, doctor, service, date, time, comment };
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
             });
-        })();
+
+            const result = await response.json();
+
+            if (result.success) {
+                msgDiv.className = 'form-message success';
+                msgDiv.textContent = result.message || 'Запись успешно создана! Мы свяжемся с вами.';
+                document.getElementById('lastName').value = '';
+                document.getElementById('firstName').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('service').value = '';
+                document.getElementById('comment').value = '';
+                if (date && doctor) populateTimeSlots(date, doctor);
+            } else {
+                msgDiv.className = 'form-message error';
+                msgDiv.textContent = result.error || 'Произошла ошибка при записи. Попробуйте ещё раз.';
+            }
+        } catch (error) {
+            console.error('Ошибка отправки:', error);
+            msgDiv.className = 'form-message error';
+            msgDiv.textContent = 'Ошибка соединения с сервером. Проверьте интернет или попробуйте позже.';
+        }
+    });
+})();
