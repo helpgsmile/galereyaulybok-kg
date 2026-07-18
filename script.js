@@ -84,10 +84,9 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     const dateInput = document.getElementById('date');
     const msgDiv = document.getElementById('formMessage');
 
-    // ⚠️ ЗАМЕНИТЕ ЭТУ ССЫЛКУ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPOlbk5uVVvz_A0KrrGNaj3fiG1iWvvku5mum4CPWSsw_OVRoc2eJd9_KbVuYuMwdA9w/exec';
+    // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZmKwF-KksEq1FMSt4DxWh1NS4GodZtT26pzb4djbTPyNDmff7MFFQWJfwrxTJgO_rcQ/exec';
 
-    // Генерация временных слотов (09:00 – 17:00)
     function generateTimeSlots() {
         const slots = [];
         for (let h = 9; h <= 17; h++) {
@@ -96,7 +95,6 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         return slots;
     }
 
-    // Заполнение select времени
     function populateTimeSlots(selectedDate, selectedDoctor) {
         const slots = generateTimeSlots();
         const now = new Date();
@@ -119,7 +117,6 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         });
     }
 
-    // Обработчики изменения даты и врача
     dateInput.addEventListener('change', function() {
         const doctor = document.getElementById('doctor').value;
         if (this.value && doctor) {
@@ -138,11 +135,9 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         }
     });
 
-    // Минимальная дата – сегодня
     const todayStr = new Date().toISOString().split('T')[0];
     dateInput.setAttribute('min', todayStr);
 
-    // Обработка отправки формы
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -172,9 +167,16 @@ document.querySelectorAll('.btn--select').forEach(btn => {
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify(payload),
             });
+
+            // Проверяем статус ответа
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
             const result = await response.json();
 
