@@ -87,31 +87,32 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     });
 });
 
-// Форма записи
+// Форма записи (исправленная)
 (function() {
     const form = document.getElementById('bookingForm');
     const timeSelect = document.getElementById('time');
     const dateInput = document.getElementById('date');
     const msgDiv = document.getElementById('formMessage');
 
-    // ⚠️ ЗАМЕНИТЕ НА ВАШ URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhM9ztobqaM-a-5dmzTKtO8p_NT-8TEGyIZw5RuvLZW7bMVTGkJ6YEplxgQkFvCfKYlA/exec';
+    // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
+    const SCRIPT_URL = 'https://script.google.com/macros/s/ВАШ_ID/exec';
 
     async function checkAvailability(date, time, doctor) {
         try {
+            // Убираем лишние заголовки, чтобы избежать preflight
             const url = SCRIPT_URL + '?date=' + encodeURIComponent(date) +
                         '&time=' + encodeURIComponent(time) +
                         '&doctor=' + encodeURIComponent(doctor);
             const response = await fetch(url, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+                // без headers Content-Type
             });
             if (!response.ok) return false;
             const result = await response.json();
             if (!result.success) return false;
             return result.bookings.some(b => b.date === date && b.time === time && b.doctor === doctor);
         } catch (error) {
-            console.error(error);
+            console.error('Ошибка проверки занятости:', error);
             return false;
         }
     }
@@ -174,6 +175,7 @@ document.querySelectorAll('.btn--select').forEach(btn => {
             return;
         }
 
+        // Проверка занятости
         const isTaken = await checkAvailability(date, time, doctor);
         if (isTaken) {
             msgDiv.className = 'form-message error';
@@ -186,22 +188,29 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         const payload = { lastName, firstName, phone: fullPhone, doctor, service, date, time, comment };
 
         try {
-            await fetch(SCRIPT_URL, {
+            // Отправляем с mode: 'cors', чтобы получить ответ
+            const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors',
+                mode: 'cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            msgDiv.className = 'form-message success';
-            msgDiv.textContent = translations[currentLang]?.msg_success || 'Запись успешно создана! Мы свяжемся с вами.';
-            document.getElementById('lastName').value = '';
-            document.getElementById('firstName').value = '';
-            document.getElementById('phone').value = '';
-            document.getElementById('service').value = '';
-            document.getElementById('comment').value = '';
-            if (date && doctor) populateTimeSlots(date, doctor);
+            const result = await response.json();
+            if (result.success) {
+                msgDiv.className = 'form-message success';
+                msgDiv.textContent = result.message || translations[currentLang]?.msg_success || 'Запись успешно создана! Мы свяжемся с вами.';
+                document.getElementById('lastName').value = '';
+                document.getElementById('firstName').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('service').value = '';
+                document.getElementById('comment').value = '';
+                if (date && doctor) populateTimeSlots(date, doctor);
+            } else {
+                msgDiv.className = 'form-message error';
+                msgDiv.textContent = result.error || translations[currentLang]?.msg_error || 'Ошибка при создании записи.';
+            }
         } catch (error) {
-            console.error(error);
+            console.error('Ошибка отправки:', error);
             msgDiv.className = 'form-message error';
             msgDiv.textContent = translations[currentLang]?.msg_error || 'Ошибка соединения с сервером. Проверьте интернет или попробуйте позже.';
         }
