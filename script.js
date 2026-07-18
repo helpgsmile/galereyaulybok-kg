@@ -87,34 +87,61 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     });
 });
 
-// ===== ФОРМА ЗАПИСИ (с обходом CORS) =====
+// ===== ФОРМА ЗАПИСИ (отправка через iframe) =====
 (function() {
     const form = document.getElementById('bookingForm');
     const timeSelect = document.getElementById('time');
     const dateInput = document.getElementById('date');
     const msgDiv = document.getElementById('formMessage');
 
-    // ⚠️ ЗАМЕНИТЕ НА ВАШ URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvdkDw480LhN1qSm3CPU2Af_00rDMvjE5fKtcPyxF_jzaFdjSa_w1cVNGcIorIFI7mcw/exec';
+    // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynj0llRYKDQwKh3S1ZtbE_oeY3emEKfSGE1k-Q1zRDHXr86ajdIRMAcLdDFDJS0K1kDA/exec';
 
-    // Функция проверки занятости – пробуем CORS, но если ошибка – считаем свободно
+    // Создаём скрытый iframe
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hiddenFrame';
+    iframe.id = 'hiddenFrame';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // Обработчик сообщений от iframe (postMessage)
+    window.addEventListener('message', function(event) {
+        // Проверяем, что сообщение от нашего iframe (по желанию можно проверить origin)
+        const data = event.data;
+        if (data && typeof data === 'object') {
+            if (data.success) {
+                msgDiv.className = 'form-message success';
+                msgDiv.textContent = data.message || translations[currentLang]?.msg_success || 'Запись успешно создана! Мы свяжемся с вами.';
+                // Очистка полей
+                document.getElementById('lastName').value = '';
+                document.getElementById('firstName').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('service').value = '';
+                document.getElementById('comment').value = '';
+                if (dateInput.value && document.getElementById('doctor').value) {
+                    populateTimeSlots(dateInput.value, document.getElementById('doctor').value);
+                }
+            } else {
+                msgDiv.className = 'form-message error';
+                msgDiv.textContent = data.error || translations[currentLang]?.msg_error || 'Ошибка при создании записи.';
+            }
+        }
+    });
+
+    // Функция проверки занятости через GET (с CORS, но если ошибка – пропускаем)
     async function checkAvailability(date, time, doctor) {
         try {
             const url = SCRIPT_URL + '?date=' + encodeURIComponent(date) +
                         '&time=' + encodeURIComponent(time) +
                         '&doctor=' + encodeURIComponent(doctor);
-            const response = await fetch(url, {
-                method: 'GET',
-                mode: 'cors',
-                headers: { 'Accept': 'application/json' }
-            });
+            const response = await fetch(url, { method: 'GET' });
             if (!response.ok) return false;
             const result = await response.json();
             if (!result.success) return false;
             return result.bookings.some(b => b.date === date && b.time === time && b.doctor === doctor);
         } catch (error) {
             console.warn('Ошибка проверки занятости (CORS), пропускаем проверку:', error);
-            return false; // если CORS не работает – считаем, что время свободно
+            return false;
         }
     }
 
@@ -186,29 +213,39 @@ document.querySelectorAll('.btn--select').forEach(btn => {
 
         let fullPhone = phone;
         if (!phone.startsWith('+996')) fullPhone = '+996' + phone.replace(/^\+?/, '');
-        const payload = { lastName, firstName, phone: fullPhone, doctor, service, date, time, comment };
 
-        try {
-            // Отправляем POST через no-cors – гарантированно работает, но ответ не читаем
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            // Так как ответ не читаем, всегда показываем успех
-            msgDiv.className = 'form-message success';
-            msgDiv.textContent = translations[currentLang]?.msg_success || 'Запись успешно создана! Мы свяжемся с вами.';
-            document.getElementById('lastName').value = '';
-            document.getElementById('firstName').value = '';
-            document.getElementById('phone').value = '';
-            document.getElementById('service').value = '';
-            document.getElementById('comment').value = '';
-            if (date && doctor) populateTimeSlots(date, doctor);
-        } catch (error) {
-            console.error('Ошибка отправки:', error);
-            msgDiv.className = 'form-message error';
-            msgDiv.textContent = translations[currentLang]?.msg_error || 'Ошибка соединения с сервером. Проверьте интернет или попробуйте позже.';
+        // Создаём временную форму для отправки через iframe
+        const hiddenForm = document.createElement('form');
+        hiddenForm.method = 'POST';
+        hiddenForm.action = SCRIPT_URL;
+        hiddenForm.target = 'hiddenFrame';
+        hiddenForm.style.display = 'none';
+
+        // Добавляем все поля
+        const fields = {
+            lastName: lastName,
+            firstName: firstName,
+            phone: fullPhone,
+            doctor: doctor,
+            service: service,
+            date: date,
+            time: time,
+            comment: comment,
+            _iframe: 'true' // маркер для скрипта, что запрос из iframe
+        };
+        for (let key in fields) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = fields[key];
+            hiddenForm.appendChild(input);
         }
+
+        document.body.appendChild(hiddenForm);
+        hiddenForm.submit();
+        // Удаляем форму после отправки
+        setTimeout(() => {
+            if (hiddenForm.parentNode) hiddenForm.remove();
+        }, 5000);
     });
 })();
