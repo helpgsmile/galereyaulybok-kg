@@ -1,7 +1,23 @@
-// Инициализация AOS
+// ===== ТЕМА (светлая/тёмная) =====
+const themeToggle = document.getElementById('themeToggle');
+const currentTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', currentTheme);
+if (currentTheme === 'dark') {
+    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+} else {
+    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+}
+themeToggle.addEventListener('click', () => {
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    themeToggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+});
+
+// ===== AOS =====
 AOS.init({ duration: 800, once: true, offset: 20 });
 
-// Бургер-меню
+// ===== БУРГЕР-МЕНЮ =====
 document.querySelector('.burger').addEventListener('click', function() {
     const nav = document.querySelector('.nav');
     nav.classList.toggle('active');
@@ -14,7 +30,7 @@ document.querySelectorAll('.nav__list a').forEach(link => {
     });
 });
 
-// Анимированная статистика
+// ===== СТАТИСТИКА (анимация счёта) =====
 const statNumbers = document.querySelectorAll('.stat__number[data-count]');
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -38,8 +54,8 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 statNumbers.forEach(el => observer.observe(el));
 
-// Карусель видео
-const videoSwiper = new Swiper('.videoSwiper', {
+// ===== КАРУСЕЛЬ ВИДЕО =====
+new Swiper('.videoSwiper', {
     slidesPerView: 1,
     spaceBetween: 20,
     navigation: {
@@ -58,7 +74,7 @@ const videoSwiper = new Swiper('.videoSwiper', {
     autoplay: { delay: 5000, disableOnInteraction: true },
 });
 
-// Кнопки "Выбрать" в прайс-листе
+// ===== КНОПКИ "ВЫБРАТЬ" В ПРАЙС-ЛИСТЕ =====
 document.querySelectorAll('.btn--select').forEach(btn => {
     btn.addEventListener('click', function() {
         const serviceName = this.getAttribute('data-service');
@@ -76,7 +92,7 @@ document.querySelectorAll('.btn--select').forEach(btn => {
 });
 
 // ============================================================
-//  ОТПРАВКА ФОРМЫ С ПРОВЕРКОЙ ЗАНЯТОСТИ (без CORS)
+//  ОТПРАВКА ФОРМЫ С ПРОВЕРКОЙ ЗАНЯТОСТИ
 // ============================================================
 (function() {
     const form = document.getElementById('bookingForm');
@@ -85,35 +101,35 @@ document.querySelectorAll('.btn--select').forEach(btn => {
     const msgDiv = document.getElementById('formMessage');
 
     // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyM4EMDNgP68vFyPfrtnzZVmM3RlWQQPug0qkY9x03xPuqibKYv2q0fuks3JafQl_c6Ug/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/ВАШ_ID/exec';
 
-    // Функция проверки занятости через GET-запрос
+    // Проверка занятости через GET
     async function checkAvailability(date, time, doctor) {
         try {
-            // Добавляем параметры к URL
-            const url = SCRIPT_URL + '?date=' + encodeURIComponent(date) + '&time=' + encodeURIComponent(time) + '&doctor=' + encodeURIComponent(doctor);
+            const url = SCRIPT_URL + '?date=' + encodeURIComponent(date) + 
+                        '&time=' + encodeURIComponent(time) + 
+                        '&doctor=' + encodeURIComponent(doctor);
             const response = await fetch(url, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
             });
             if (!response.ok) {
                 console.error('Ошибка проверки занятости:', response.status);
-                return false; // если ошибка, считаем свободно (или можно показать ошибку)
+                return false;
             }
             const result = await response.json();
             if (!result.success) {
                 console.error('Ошибка в ответе:', result.error);
                 return false;
             }
-            // Проверяем, есть ли совпадение
             return result.bookings.some(b => b.date === date && b.time === time && b.doctor === doctor);
         } catch (error) {
             console.error('Ошибка проверки занятости:', error);
-            return false; // в случае ошибки считаем свободно (можно показать сообщение)
+            return false;
         }
     }
 
-    // Генерация временных слотов
+    // Генерация временных слотов (09:00 – 17:00)
     function generateTimeSlots() {
         const slots = [];
         for (let h = 9; h <= 17; h++) {
@@ -122,14 +138,13 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         return slots;
     }
 
-    // Заполнение select времени
     function populateTimeSlots(selectedDate, selectedDoctor) {
         const slots = generateTimeSlots();
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const selected = new Date(selectedDate + 'T00:00:00');
 
-        timeSelect.innerHTML = '<option value="">Выберите время</option>';
+        timeSelect.innerHTML = '<option value="">' + (translations[currentLang]?.select_time || 'Выберите время') + '</option>';
 
         slots.forEach(time => {
             if (selected.getTime() === today.getTime()) {
@@ -145,13 +160,12 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         });
     }
 
-    // Обработчики изменения даты и врача
     dateInput.addEventListener('change', function() {
         const doctor = document.getElementById('doctor').value;
         if (this.value && doctor) {
             populateTimeSlots(this.value, doctor);
         } else {
-            timeSelect.innerHTML = '<option value="">Выберите дату и врача</option>';
+            timeSelect.innerHTML = '<option value="">' + (translations[currentLang]?.select_time || 'Выберите время') + '</option>';
         }
     });
 
@@ -160,14 +174,13 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         if (date && this.value) {
             populateTimeSlots(date, this.value);
         } else {
-            timeSelect.innerHTML = '<option value="">Выберите дату и врача</option>';
+            timeSelect.innerHTML = '<option value="">' + (translations[currentLang]?.select_time || 'Выберите время') + '</option>';
         }
     });
 
     const todayStr = new Date().toISOString().split('T')[0];
     dateInput.setAttribute('min', todayStr);
 
-    // Обработка отправки формы
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -180,21 +193,24 @@ document.querySelectorAll('.btn--select').forEach(btn => {
         const time = timeSelect.value;
         const comment = document.getElementById('comment').value.trim();
 
+        // Валидация
         if (!lastName || !firstName || !phone || !doctor || !service || !date || !time) {
+            const msg = translations[currentLang]?.msg_fill_fields || 'Пожалуйста, заполните все обязательные поля.';
             msgDiv.className = 'form-message error';
-            msgDiv.textContent = 'Пожалуйста, заполните все обязательные поля.';
+            msgDiv.textContent = msg;
             return;
         }
 
         // Проверка занятости
         const isTaken = await checkAvailability(date, time, doctor);
         if (isTaken) {
+            const msg = translations[currentLang]?.msg_time_taken || 'Это время уже занято. Пожалуйста, выберите другое время.';
             msgDiv.className = 'form-message error';
-            msgDiv.textContent = 'Это время уже занято. Пожалуйста, выберите другое время.';
+            msgDiv.textContent = msg;
             return;
         }
 
-        // Если свободно, отправляем через fetch с mode: 'no-cors'
+        // Подготовка данных
         let fullPhone = phone;
         if (!phone.startsWith('+996')) {
             fullPhone = '+996' + phone.replace(/^\+?/, '');
@@ -202,17 +218,18 @@ document.querySelectorAll('.btn--select').forEach(btn => {
 
         const payload = { lastName, firstName, phone: fullPhone, doctor, service, date, time, comment };
 
+        // Отправка POST (no-cors)
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // важно для обхода CORS
+                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            // При no-cors мы не можем прочитать ответ, поэтому считаем успех
+            const msg = translations[currentLang]?.msg_success || 'Запись успешно создана! Мы свяжемся с вами.';
             msgDiv.className = 'form-message success';
-            msgDiv.textContent = 'Запись успешно создана! Мы свяжемся с вами.';
-            // Очищаем поля
+            msgDiv.textContent = msg;
+            // Очистка полей
             document.getElementById('lastName').value = '';
             document.getElementById('firstName').value = '';
             document.getElementById('phone').value = '';
@@ -221,8 +238,9 @@ document.querySelectorAll('.btn--select').forEach(btn => {
             if (date && doctor) populateTimeSlots(date, doctor);
         } catch (error) {
             console.error('Ошибка отправки:', error);
+            const msg = translations[currentLang]?.msg_error || 'Ошибка соединения с сервером. Проверьте интернет или попробуйте позже.';
             msgDiv.className = 'form-message error';
-            msgDiv.textContent = 'Ошибка соединения с сервером. Проверьте интернет или попробуйте позже.';
+            msgDiv.textContent = msg;
         }
     });
 })();
